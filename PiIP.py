@@ -10,7 +10,7 @@ import json
 
 import os
 import socket
-
+import platform
 
 def getExtIP():
     # we provide two kinds of method to query external ip. Network is needed
@@ -36,8 +36,13 @@ def getExtIP():
 
 
 def getIntIP():
-    #if the network lost its connection, ip will be simply 172.0.0.1
+    #if the network lost its connection, ip will be simply 127.0.0.1
     ip = socket.gethostbyname(socket.gethostname())
+    sysstr = platform.system();
+    if((ip=="127.0.0.1") & (sysstr=="Linux")):
+        # command 'hostname -I' is available on Linux not macOS
+        textlist = os.popen("hostname -I").read().split()
+        ip = textlist[0];
     return ip;
 
 
@@ -102,10 +107,9 @@ def testMail():
 
 
 if __name__ == '__main__':
-    print(getExtIP());
-    print(getIntIP())
-    loginSTU("15djwang", "wswdjCS6513861");
-    sendMail();
+    if(loginSTU("15djwang", "wswdjCS6513861")==False):
+        loginSTU("15djwang", "wswdjCS6513861")
+        sendMail();
 
 
 
